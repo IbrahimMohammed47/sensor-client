@@ -116,7 +116,7 @@ public:
         
         for (int i = 0; i < subscribers.size(); i++)
         {      
-          int subscriber = subscribers.pop().value();
+          int subscriber = subscribers.pop();
           int optval;
           socklen_t optlen = sizeof(optval);
           
