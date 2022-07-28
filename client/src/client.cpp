@@ -18,13 +18,13 @@ class Client {
     private:
     
         int socket_fd;
-    
-        long count;
-        long double sum;
         long double start_time;
         long double last_print_time; 
 
     public:
+        long count;
+        long double sum;
+        
         Client() {
             count = 0.0;
             sum = 0.0;
@@ -52,7 +52,6 @@ class Client {
 
                 // Fill in server IP address
             struct sockaddr_in server;
-            int serverAddrLen;
             bzero( &server, sizeof( server ) );
 
             server.sin_family = AF_INET;
@@ -99,7 +98,6 @@ class Client {
             
             } 
         }
-
         void post_connect(){
             // start_time = clock();
             start_time = std::chrono::duration_cast<std::chrono::seconds>(Clock::now().time_since_epoch()).count();
@@ -113,6 +111,9 @@ class Client {
 
             long double current_time = std::chrono::duration_cast<std::chrono::seconds>(Clock::now().time_since_epoch()).count();
             long double duration = current_time - start_time;
+            if(duration == 0){
+               duration = 1; 
+            }
 
             double avg = sum / count;
             double acc = sum / duration;                      
@@ -135,16 +136,3 @@ class Client {
             close(socket_fd);
         }
 };  
-
-
-
-int main(int argc, char *argv[])
-{
-
-    Client c;
-    c.init();
-    c.connect_to_host("localhost",12345);
-    c.post_connect();
-    c.consume();
-    return 0;
-}
