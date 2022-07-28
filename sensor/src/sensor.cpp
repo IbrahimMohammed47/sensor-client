@@ -15,7 +15,6 @@
 
 using namespace std; 
 
-
 class Sensor {
 private:
   int port = 12345;
@@ -26,7 +25,9 @@ private:
   ThreadSafeDeque<int> subscribers;
 
 public:
-  Sensor() {
+  // Sensor() {
+  Sensor(int port, int rate): port(port), rate(rate) {
+
     listener_fd = socket(AF_INET, SOCK_STREAM, 0);
     // comm_fd = socket(AF_INET, SOCK_STREAM, 0);
 

@@ -5,7 +5,13 @@
 int main(int argc, char const *argv[])
 {
     // cout << "th: "<< std::this_thread::get_id <<endl;
-    Sensor* s = new Sensor();
+    char* port_str = getenv("SENSOR_PORT");
+    if(port_str == nullptr){
+        port_str = (char*)"12345";
+    }
+    int port = atoi(port_str);
+    int rate = 1;
+    Sensor* s = new Sensor(port, rate);
     // s.listen_clients(); 
 
     thread listener_thread(&Sensor::listen_clients, s);

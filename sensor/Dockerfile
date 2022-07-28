@@ -6,6 +6,10 @@ WORKDIR /usr/src/app
 
 COPY . .
 
+ENV SENSOR_PORT=12345
+
 RUN make
+
+EXPOSE 12345
 
 CMD [ "./sensor_runner.o" ]
