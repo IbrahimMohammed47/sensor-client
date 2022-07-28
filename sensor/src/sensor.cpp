@@ -13,8 +13,6 @@
 
  
 
-using namespace std; 
-
 class Sensor {
 private:
   int port = 12345;
@@ -96,7 +94,7 @@ public:
                 << ( ( ntohl(peeraddr.sin_addr.s_addr) >> 16) & 0xff ) << "."
                 << ( ( ntohl(peeraddr.sin_addr.s_addr) >> 8) & 0xff )  << "."
                 <<   ( ntohl(peeraddr.sin_addr.s_addr) & 0xff ) << ", port "   // Low byte of addr
-                << ntohs(peeraddr.sin_port) << endl;        
+                << ntohs(peeraddr.sin_port) << std::endl;        
         subscribers.push(client_socket);
     }
   }
@@ -110,7 +108,7 @@ public:
     for(;;)
     {
         float reading = dist(gen);
-        string reading_str= to_string(reading);
+        std::string reading_str= std::to_string(reading);
         char const *reading_bytes = reading_str.c_str();
         // delay for {rate} seconds
         for(i = 0 ; i < rate ; i++) { usleep(1000 * 1000); }

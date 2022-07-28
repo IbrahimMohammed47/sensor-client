@@ -14,8 +14,8 @@ int main(int argc, char const *argv[])
     Sensor* s = new Sensor(port, rate);
     // s.listen_clients(); 
 
-    thread listener_thread(&Sensor::listen_clients, s);
-    thread producer_thread(&Sensor::produce_readings, s);
+    std::thread listener_thread(&Sensor::listen_clients, s);
+    std::thread producer_thread(&Sensor::produce_readings, s);
 
     listener_thread.join();
     producer_thread.join();
