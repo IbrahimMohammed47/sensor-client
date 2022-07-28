@@ -16,11 +16,6 @@
 
 using namespace std; 
 
-struct Connection
-{
-  int server_fd;
-  int client_fd;
-};
 
 class Sensor {
 private:
@@ -68,10 +63,6 @@ public:
     // setsockopt(comm_fd, SOL_SOCKET, SO_LINGER, &linger_opt2, sizeof(linger_opt2));
 
   };
-
-  // void prepare_socket(){
-
-  // }
 
   ~Sensor() {
     subscribers.close();
@@ -122,11 +113,9 @@ public:
         float reading = dist(gen);
         string reading_str= to_string(reading);
         char const *reading_bytes = reading_str.c_str();
-        // delay for 10 seconds
+        // delay for {rate} seconds
         for(i = 0 ; i < rate ; i++) { usleep(1000 * 1000); }
-        // print
-        // printf("%ld\n", subscribers.size());
-        // cout << sizeof(subscribers);
+        
         for (size_t i = 0; i < subscribers.size(); i++)
         {      
           int subscriber = subscribers.pop().value();
