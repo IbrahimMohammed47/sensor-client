@@ -87,7 +87,11 @@ class Client {
             {
                 char buffer[8];
                 res = read(socket_fd, buffer, 8);
-                if (res < 0)
+                if (res==0){
+                    std::cerr << "Sensor is down\n" << std::endl;
+                    exit(1);
+                }
+                else if (res < 0)
                 {
                     std::cerr << "Error: " << strerror(errno) << std::endl;
                     exit(1);
@@ -115,6 +119,7 @@ class Client {
                duration = 1; 
             }
 
+
             double avg = sum / count;
             double acc = sum / duration;                      
             return std::make_pair(avg, acc);
@@ -123,6 +128,7 @@ class Client {
 
         void report(double avg, double acc){
             long double current_time = std::chrono::duration_cast<std::chrono::seconds>(Clock::now().time_since_epoch()).count();
+            
             if (current_time - last_print_time >= PRINT_PERIOD){
                 std::cout << "Avg: " << avg << " °C" << "\n";
                 std::cout << "Acc: " << acc  << " °C/s" << "\n";
