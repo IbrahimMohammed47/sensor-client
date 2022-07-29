@@ -1,0 +1,31 @@
+version: '3.0'
+services:
+  sensor:
+    build:
+      context: sensor
+      dockerfile: Dockerfile  
+    environment:
+      SENSOR_PORT: 12345
+    networks:
+      sensor_net:
+        ipv4_address: 10.5.0.2 
+  client:
+    depends_on:
+      - sensor
+    build:
+      context: client
+      dockerfile: Dockerfile  
+    environment:
+      SENSOR_HOST: 10.5.0.2
+      SENSOR_PORT: 12345
+    networks:
+      sensor_net:
+        ipv4_address: 10.5.0.3
+
+networks:
+  sensor_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
+          # gateway: 10.5.0.1

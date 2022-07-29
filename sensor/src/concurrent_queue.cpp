@@ -6,7 +6,6 @@
 #include <atomic>
 #include <queue>
 #include <condition_variable>
-#include <optional>
 #include <cassert>
 
 template<class T>
@@ -25,7 +24,7 @@ class ThreadSafeDeque {
         }
 
 
-        std::optional<T> pop()
+        T pop()
         {
             std::unique_lock<std::mutex> lck(mtx);
             while (que.empty() && !end)
@@ -38,7 +37,7 @@ class ThreadSafeDeque {
             
         }
 
-        std::optional<T> remove (const T& t)
+        T remove (const T& t)
         {
             std::unique_lock<std::mutex> lck(mtx);
             while (que.empty() && !end)
