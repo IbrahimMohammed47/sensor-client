@@ -12,6 +12,10 @@
 typedef std::chrono::high_resolution_clock Clock;
 typedef std::pair<double,double> Pair;  
 
+double get_time_now_in_seconds(){
+    return std::chrono::duration_cast<std::chrono::seconds>(Clock::now().time_since_epoch()).count();
+}
+
 class Client {
   
     short PRINT_PERIOD = 5;
@@ -31,7 +35,6 @@ class Client {
         };
 
         void init(){
-                // Create socket
             socket_fd = socket(AF_INET, SOCK_STREAM, 0);
             if (socket_fd < 0)
             {
@@ -42,7 +45,6 @@ class Client {
 
         void connect_to_host(char* serverHostName, short serverPort){
         
-            // Resolve server address (convert from symbolic name to IP number)
             struct hostent *host = gethostbyname(serverHostName);
             if (host == NULL)
             {
@@ -50,24 +52,20 @@ class Client {
                 exit(1);
             }
 
-                // Fill in server IP address
             struct sockaddr_in server;
             bzero( &server, sizeof( server ) );
 
             server.sin_family = AF_INET;
             server.sin_port = htons(serverPort);
         
-            // Print a resolved address of server (the first IP of the host)
             std::cout << "server address = " << (host->h_addr_list[0][0] & 0xff) << "." <<
                                                 (host->h_addr_list[0][1] & 0xff) << "." <<
                                                 (host->h_addr_list[0][2] & 0xff) << "." <<
                                                 (host->h_addr_list[0][3] & 0xff) << ", port " <<
                                                 static_cast<int>(serverPort) << std::endl;
         
-            // Write resolved IP address of a server to the address structure
             memmove(&(server.sin_addr.s_addr), host->h_addr_list[0], 4);
         
-            // Connect to the remote server
             int res = connect(socket_fd, (struct sockaddr*) &server, sizeof(server));
             if (res < 0)
             {
@@ -78,7 +76,6 @@ class Client {
             std::cout << "Connected" << std::endl;
         }
 
-        // void (*handler)(void*, float)
         void consume(){
             std::cout << "Listening...\n" << std::endl;
             int res;
@@ -103,8 +100,7 @@ class Client {
             } 
         }
         void post_connect(){
-            // start_time = clock();
-            start_time = std::chrono::duration_cast<std::chrono::seconds>(Clock::now().time_since_epoch()).count();
+            start_time = get_time_now_in_seconds();
             last_print_time = start_time - PRINT_PERIOD;
         }
 
@@ -112,14 +108,11 @@ class Client {
         {
             count ++;
             sum += val;  
-
-            long double current_time = std::chrono::duration_cast<std::chrono::seconds>(Clock::now().time_since_epoch()).count();
+            long double current_time = get_time_now_in_seconds();
             long double duration = current_time - start_time;
             if(duration == 0){
                duration = 1; 
             }
-
-
             double avg = sum / count;
             double acc = sum / duration;                      
             return std::make_pair(avg, acc);
@@ -127,7 +120,7 @@ class Client {
         }
 
         void report(double avg, double acc){
-            long double current_time = std::chrono::duration_cast<std::chrono::seconds>(Clock::now().time_since_epoch()).count();
+            long double current_time = get_time_now_in_seconds();
             
             if (current_time - last_print_time >= PRINT_PERIOD){
                 std::cout << "Avg: " << avg << " °C" << "\n";
