@@ -59,4 +59,5 @@
       - Opens opportunity for rich out-of-th-box processing components (see [ksqldb](https://ksqldb.io/), [kafka streams](https://kafka.apache.org/documentation/streams/))
     - cons:
       - more services to be managed and maintained
-      - needs experience for managing lifecycle of broker and data
+      - additional storage needed
+      - needs experience for managing lifecycle of broker and data(broker configuration, capacity planning, security measurements...etc)

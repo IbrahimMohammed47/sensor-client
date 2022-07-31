@@ -12,6 +12,7 @@ int main(int argc, char const *argv[])
     int port = atoi(port_str);
     int rate = 1;
     Sensor* s = new Sensor(port, rate);
+    s->init();
     // s.listen_clients(); 
 
     std::thread listener_thread(&Sensor::listen_clients, s);

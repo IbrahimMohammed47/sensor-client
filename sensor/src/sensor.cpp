@@ -15,15 +15,23 @@
 
 class Sensor {
 private:
-  int port = 12345;
-  int rate = 1;
+  int port;
+  int rate;
   int listener_fd;
   ThreadSafeDeque<int> subscribers;
 
 public:
   // Sensor() {
   Sensor(int port, int rate): port(port), rate(rate) {
+      rate = 1;
+  };
 
+  ~Sensor() {
+    subscribers.close();
+    close(listener_fd); 
+  }
+
+  void init(){
     listener_fd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (listener_fd < 0 )
@@ -47,11 +55,6 @@ public:
         exit(1);
     }
 
-  };
-
-  ~Sensor() {
-    subscribers.close();
-    close(listener_fd); 
   }
 
   void listen_clients(){
@@ -89,7 +92,7 @@ public:
   {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dist(35, 50);
+    std::uniform_real_distribution<> dist(30, 50);
     int i;
     int j;
     int optval;
