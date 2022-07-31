@@ -58,5 +58,5 @@
       - Opens opportunities for different kinds of easy integrations (see [Kafka connectors](https://docs.confluent.io/home/connect/self-managed/kafka_connectors.html))
       - Opens opportunity for rich out-of-th-box processing components (see [ksqldb](https://ksqldb.io/), [kafka streams](https://kafka.apache.org/documentation/streams/))
     - cons:
-      - more services to be manages and maintained
-      - needs experience for managing lifecycle of system and data
+      - more services to be managed and maintained
+      - needs experience for managing lifecycle of broker and data
