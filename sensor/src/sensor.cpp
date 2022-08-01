@@ -15,15 +15,23 @@
 
 class Sensor {
 private:
-  int port = 12345;
-  int rate = 1;
+  int port;
+  int rate;
   int listener_fd;
   ThreadSafeDeque<int> subscribers;
 
 public:
   // Sensor() {
   Sensor(int port, int rate): port(port), rate(rate) {
+      rate = 1;
+  };
 
+  ~Sensor() {
+    subscribers.close();
+    close(listener_fd); 
+  }
+
+  void init(){
     listener_fd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (listener_fd < 0 )
@@ -47,11 +55,6 @@ public:
         exit(1);
     }
 
-  };
-
-  ~Sensor() {
-    subscribers.close();
-    close(listener_fd); 
   }
 
   void listen_clients(){
@@ -70,23 +73,31 @@ public:
         {
             std::cerr << "Error: " << strerror(errno) << std::endl;
             continue;
-        }
-        std::cout << "Connection from IP "
-                << ( ( ntohl(peeraddr.sin_addr.s_addr) >> 24) & 0xff ) << "."  // High byte of address
-                << ( ( ntohl(peeraddr.sin_addr.s_addr) >> 16) & 0xff ) << "."
-                << ( ( ntohl(peeraddr.sin_addr.s_addr) >> 8) & 0xff )  << "."
-                <<   ( ntohl(peeraddr.sin_addr.s_addr) & 0xff ) << ", port "   // Low byte of addr
-                << ntohs(peeraddr.sin_port) << std::endl;        
-        subscribers.push(client_socket);
+        }        
+        add_subscriber(client_socket, peeraddr);
     }
+  }
+
+  void add_subscriber(int client_socket, struct sockaddr_in peeraddr){
+    std::cout << "Connection from IP "
+              << ( ( ntohl(peeraddr.sin_addr.s_addr) >> 24) & 0xff ) << "."  // High byte of address
+              << ( ( ntohl(peeraddr.sin_addr.s_addr) >> 16) & 0xff ) << "."
+              << ( ( ntohl(peeraddr.sin_addr.s_addr) >> 8) & 0xff )  << "."
+              <<   ( ntohl(peeraddr.sin_addr.s_addr) & 0xff ) << ", port "   // Low byte of addr
+              << ntohs(peeraddr.sin_port) << std::endl;
+    subscribers.push(client_socket);
   }
   
   void produce_readings()
   {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dist(35, 50);
+    std::uniform_real_distribution<> dist(30, 50);
     int i;
+    int j;
+    int optval;
+    socklen_t optlen = sizeof(optval);
+          
     for(;;)
     {
         float reading = dist(gen);
@@ -95,11 +106,9 @@ public:
         // delay for {rate} seconds
         for(i = 0 ; i < rate ; i++) { usleep(1000 * 1000); }
         
-        for (int i = 0; i < subscribers.size(); i++)
+        for (j = 0; j < subscribers.size(); j++)
         {      
           int subscriber = subscribers.pop();
-          int optval;
-          socklen_t optlen = sizeof(optval);
           
           getsockopt(subscriber,SOL_SOCKET,SO_ERROR,&optval, &optlen);
           if(optval!=0){ //|| res !=0
